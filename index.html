@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>When do Climate Futures begin to diverge?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+</head>
+<body>
+  <div class="page-bg"></div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-mark">🌍</div>
+      <div class="header-title">DSC 106 · Final Project</div>
+      <nav class="header-nav">
+        <a href="#hero">Intro</a>
+        <a href="#map-section">Map</a>
+        <a href="#thermo-section">Thermometers</a>
+        <a href="#line-section">Data Explorer</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section id="hero" class="section hero-section observe">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1>When do Climate Futures begin to diverge and what are the consequences of our choices?</h1>
+          <p class="hero-subtitle">
+            An explorable explanation using CMIP6 data
+            to show the differences between climate futures and what those divergences mean for humanity.
+          </p>
+          <div class="hero-meta">
+            <span class="hero-tag">CMIP6 · SSP Scenarios</span>
+            <span class="hero-tag">Interactive Thermometers</span>
+            <span class="hero-tag">Country-Level Map</span>
+          </div>
+          <button id="scroll-to-map" class="primary-button">
+            Choose a country to begin
+          </button>
+        </div>
+        <div class="hero-visual">
+          <div class="hero-thermo-shell">
+            <div class="hero-thermo-label">We are here</div>
+            <div class="hero-thermo-temp">+1.2°C</div>
+            <div class="hero-thermo-bar">
+              <div class="hero-thermo-fill"></div>
+            </div>
+            <div class="hero-thermo-base"></div>
+            <div class="hero-thermo-caption">
+              <span class="hero-thermo-caption-sub">1850 → today</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-scroll-hint">
+        Scroll to choose a country and see its climate future
+      </div>
+    </section>
+
+    <!-- MAP SECTION -->
+    <section id="map-section" class="section map-section observe">
+      <div class="section-inner">
+        <div class="section-label">Step 1 · Choose a place and a risk</div>
+        <h2>Explore when countries cross climate risk thresholds</h2>
+        <p>
+          First, choose a scenario and a risk level. Then scrub through time
+          or press play. Countries that cross the selected risk threshold will light up on the map.
+        </p>
+
+        <div class="map-controls-row">
+          <div class="map-status">
+            <span class="map-status-label">Currently viewing:</span>
+            <span id="selected-region-label" class="map-status-value">Global average</span>
+          </div>
+          <button id="reset-region-button" class="ghost-button" disabled>
+            Reset to global
+          </button>
+        </div>
+
+        <div class="map-control-bar">
+          <div class="map-control-group">
+            <label for="map-scenario-select">Emissions Scenario</label>
+            <select id="map-scenario-select">
+              <option value="SSP1-2.6">SSP1-2.6 (low)</option>
+              <option value="SSP2-4.5" selected>SSP2-4.5 (medium)</option>
+              <option value="SSP3-7.0">SSP3-7.0 (high)</option>
+              <option value="SSP5-8.5">SSP5-8.5 (extreme)</option>
+            </select>
+          </div>
+          <div class="map-control-group">
+            <label for="map-risk-select">Risk threshold</label>
+            <select id="map-risk-select">
+              <option value="1.5">Risk 1 (+1.5°C)</option>
+              <option value="2.0" selected>Risk 2 (+2.0°C)</option>
+              <option value="3.0">Risk 3 (+3.0°C)</option>
+              <option value="4.0">Risk 4 (+4.0°C)</option>
+            </select>
+          </div>
+          <div class="map-control-group map-year-controls">
+            <span id="map-year-label">Year: 2015</span>
+            <input id="map-year-slider" type="range" min="2015" max="2100" value="2026" />
+            <button id="map-play-button" class="secondary-button">Play</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="map-container panel panel-glass">
+        <svg id="world-map-svg" width="1120" height="480"></svg>
+        <div class="viz-caption">
+          <span class="viz-caption-main">
+            Hover to see country names. Click a country to explore its climate future in the visualizations below.
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- NARRATIVE INTRO -->
+    <section class="section narrative-section observe">
+      <div class="section-inner">
+        <div class="section-label">Narrative</div>
+        <h2>From one shared past to many possible futures</h2>
+        <p>
+          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ea soluta at placeat dignissimos aliquid impedit maxime veritatis rem molestias esse ab, nostrum laborum quos saepe dolorem asperiores ratione quaerat numquam.
+        </p>
+      </div>
+    </section>
+
+    <!-- THERMOMETER SECTION -->
+    <section id="thermo-section" class="section observe">
+      <div class="section-inner">
+        <div class="section-header-row">
+          <div>
+            <div class="section-label">Step 2 · Watch futures diverge</div>
+            <h2>Rising thermometers for different climate futures</h2>
+            <p id="thermo-region-text">
+              Each thermometer represents a CMIP6-style scenario (SSP1–2.6, SSP2–4.5, SSP3–7.0, SSP5–8.5) for the
+              <strong>global average</strong>. Use the year slider or play button to watch how they rise together at
+              first, then split apart as the century unfolds. The number inside each bulb shows the temperature
+              anomaly for that scenario and year.
+            </p>
+          </div>
+          <div class="controls-panel">
+            <div class="control-row">
+              <span id="year-label" class="control-label">Year: 2015</span>
+              <input id="year-slider" type="range" min="2015" max="2100" step="1" value="2026" />
+            </div>
+            <div class="control-row">
+              <button id="play-button" class="secondary-button">Play</button>
+              <button id="reset-button" class="ghost-button">Reset</button>
+            </div>
+            <div class="control-row">
+              <label class="toggle-label">
+                <input type="checkbox" id="comparison-toggle" checked />
+                <span>show all scenarios</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div id="viz-container" class="panel panel-glass">
+          <svg id="thermo-svg" width="960" height="380"></svg>
+          <div class="viz-caption">
+            <span class="viz-caption-sub">
+              CMIP6 temperature anomaly (°C above 1850–1900 baseline) for the selected country or
+              global average.
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- THRESHOLD SECTION -->
+    <section id="threshold-section" class="section observe">
+      <div class="section-inner threshold-layout">
+        <div>
+          <div class="section-label">Step 3 · Interpret risks</div>
+          <h2>Four levels of climate risk</h2>
+          <p>
+            Horizontal lines on the thermometers mark risk thresholds. As you
+            select a country, this section will summarize when that place crosses each risk level under different
+            futures.
+          </p>
+        </div>
+        <div class="threshold-grid">
+          <div class="threshold-card">
+            <div class="threshold-pill threshold-pill-15">+1.5°C</div>
+            <h3>Risk 1</h3>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus, vitae molestiae saepe corrupti nobis ad totam modi commodi deleniti maxime dignissimos impedit placeat dolorum odio laboriosam mollitia facere atque aliquid.
+            </p>
+          </div>
+          <div class="threshold-card">
+            <div class="threshold-pill threshold-pill-20">+2.0°C</div>
+            <h3>Risk 2</h3>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni nulla nostrum iusto explicabo voluptas ipsam vero reprehenderit minus dolores laudantium, itaque voluptatum suscipit unde enim repellat placeat? Iste, perspiciatis tenetur?
+            </p>
+          </div>
+          <div class="threshold-card">
+            <div class="threshold-pill threshold-pill-30">+3.0°C</div>
+            <h3>Risk 3</h3>
+            <p>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure totam, sit accusantium laboriosam rerum saepe nemo ipsam dolor ullam, voluptatum obcaecati, hic unde perspiciatis. Nisi laudantium doloribus ullam alias non.
+            </p>
+          </div>
+          <div class="threshold-card">
+            <div class="threshold-pill threshold-pill-40">+4.0°C</div>
+            <h3>Risk 4</h3>
+            <p>
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quam quis beatae obcaecati dolor, porro earum expedita veniam aspernatur saepe officiis nihil alias nulla suscipit! Labore deserunt est rem facere eligendi.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-inner">
+        <div id="risk-narrative" class="risk-narrative panel panel-glass">
+          <div class="risk-narrative-title">When does this place cross each risk?</div>
+          <p class="risk-narrative-placeholder">
+            Select a country on the map above to see when it crosses each risk level in a extreme‑emissions future
+            (SSP5‑8.5) compared to a low‑emissions future (SSP1‑2.6).
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- LINE CHART SECTION -->
+    <section id="line-section" class="section observe">
+      <div class="section-inner">
+        <div class="section-header-row">
+          <div>
+            <div class="section-label">Step 4 · Explore the data</div>
+            <h2>Multi‑scenario line chart for the selected country</h2>
+            <p id="line-region-text">
+              This line chart shows the same CMIP6 data as the thermometers, currently for
+              the <strong>global average</strong>. The vertical line tracks the current year from the slider above.
+              You can toggle scenarios on and off to focus on specific futures.
+            </p>
+          </div>
+          <div class="legend-panel">
+            <div class="legend-title">Scenarios</div>
+            <div id="scenario-checkboxes" class="legend-items"></div>
+          </div>
+        </div>
+
+        <div class="panel panel-glass">
+          <svg id="line-svg" width="960" height="320"></svg>
+          <div class="viz-caption">
+            <span class="viz-caption-sub">
+              Try scrubbing the year slider above to see how the vertical marker moves through time.
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLOSING SECTION -->
+    <section class="section observe">
+      <div class="section-inner closing-section">
+        <div class="section-label">Reflection</div>
+        <h2>The future is not fixed</h2>
+        <p>
+          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nisi iusto accusantium assumenda vero architecto mollitia distinctio rerum iste adipisci, placeat officia sit perferendis tempora ipsa animi quibusdam eveniet libero voluptas.
+        </p>
+      </div>
+    </section>
+
+
+    <!-- Writeup -->
+    <section class="writeup"> 
+      <h2>What Have We Done So Far?</h2> 
+  
+      <p> 
+        So far, we have determined the topic for our project to be when different 
+        climate futures begin to diverge under different emissions scenarios using 
+        the CMIP6 dataset. We examined different emissions scenarios and how the 
+        global temperature in the future depends on human decisions. 
+      </p> 
+  
+      <p> 
+        We also created various charts, such as a line graph, bar plot, heatmap, 
+        and threshold plots. We implemented interactive visualizations such as a 
+        time slider, animated thermometers, and visual comparison tools. 
+      </p> 
+  
+      <p> 
+        We’ve mainly focused on visualization and interaction so far, while the 
+        narrative structure of the project is still being developed. Our goal is 
+        to eventually combine storytelling with visualization and convey how 
+        different climate futures diverge over time and what each warming 
+        threshold means. 
+      </p> 
+    </section> 
+  
+    <section class="writeup"> 
+      <h2> 
+        What Will Be the Most Challenging Part of the Project and Why? 
+      </h2> 
+  
+      <p> 
+        The challenging part of this project would be to make the storytelling 
+        and interactive visualizations intuitive and visually engaging. It may 
+        also be challenging to smoothly synchronize all of the different 
+        visualizations, such as the animated thermometers, the time slider, 
+        threshold annotations, and the global map. 
+      </p> 
+  
+      <p> 
+        Another challenge would be ensuring that the visualization is not too 
+        overwhelming or cluttered for users. Since the project involves complex 
+        climate data and multiple interactions, we will need to carefully balance 
+        scientific accuracy with visual clarity. 
+      </p> 
+  
+      <p> 
+        It would also be difficult to present complex data interactions in a way 
+        that is understandable to a general audience without oversimplifying the 
+        information. Finally, we also want to balance user exploration with 
+        storytelling so that users can interact freely with the visualizations 
+        while also learning about how climate futures diverge over time and how 
+        the decisions we make today may shape future climate outcomes. 
+      </p> 
+    </section> 
+  </main>
+
+  
+
+
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>DSC 106 · Spring 2026 · Final Project</span>
+      <span>Data: CMIP6 country-level warming</span>
+    </div>
+  </footer>
+
+  <div id="tooltip" class="tooltip" style="display:none;"></div>
+
+  <script src="script.js"></script>
+
+
+
+</body>
+
+
+</html>
+
