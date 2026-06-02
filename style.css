@@ -876,3 +876,111 @@ body {
   color: #cbd5e1;
 }
 
+#scenario-focus-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+
+  display: none;
+  visibility: hidden;
+  pointer-events: none;
+
+  backdrop-filter: blur(4px);
+  z-index: 200;
+
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 40px;
+}
+
+#scenario-focus-svg {
+  overflow: visible;
+  margin-bottom: 8px;
+  margin-top: -120px;
+}
+
+#scenario-focus-panel {
+  margin-top: 360px;
+  padding: 18px 22px;
+  border-radius: 14px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  color: #e5e7eb;
+  font-size: 14px;
+  max-width: 360px;
+  text-align: left;
+  box-shadow: 0 18px 45px rgba(0,0,0,0.55);
+}
+
+#scenario-focus-exit {
+  margin-top: 360px;
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  color: #e0f2fe;
+  cursor: pointer;
+}
+
+
+#global-year-controls {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: #0f172a;
+  padding: 10px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+
+  display: flex;
+  align-items: center;
+}
+
+/* Center the slider group */
+.global-year-left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Keep buttons on the right */
+.global-year-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+.global-year-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#global-year-slider {
+  width: 100%;
+  max-width: 900px;   /* matches your chart inner width visually */
+}
+
+
+#global-play-button,
+#global-reset-button {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 8px;
+  background: rgba(56, 189, 248, 0.25);
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  color: #e0f2fe;
+  cursor: pointer;
+}
+
+html {
+  scroll-padding-top: 90px; /* match your header height */
+}
+
+
+

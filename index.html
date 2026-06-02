@@ -22,6 +22,18 @@
         <a href="#line-section">Data Explorer</a>
       </nav>
     </div>
+
+    <div id="global-year-controls">
+      <div class="global-year-left">
+        <input type="range" id="global-year-slider" min="2015" max="2100" value="2020">
+        <span id="global-year-label">2020</span>
+      </div>
+
+      <div class="global-year-right">
+        <button id="global-play-button">Play</button>
+        <button id="global-reset-button">Reset</button>
+      </div>
+    </div>
   </header>
 
   <main>
@@ -95,16 +107,11 @@
           <div class="map-control-group">
             <label for="map-risk-select">Risk threshold</label>
             <select id="map-risk-select">
-              <option value="1.5">Risk 1 (+1.5°C)</option>
-              <option value="2.0" selected>Risk 2 (+2.0°C)</option>
-              <option value="3.0">Risk 3 (+3.0°C)</option>
-              <option value="4.0">Risk 4 (+4.0°C)</option>
+              <option value="2.0" selected>Local Stress(+2.0°C)</option>
+              <option value="4.0">National Pressure(+4.0°C)</option>
+              <option value="6.0">Societal Instability(+6.0°C)</option>
+              <option value="8.0">Transformation Zone(+8.0°C)</option>
             </select>
-          </div>
-          <div class="map-control-group map-year-controls">
-            <span id="map-year-label">Year: 2015</span>
-            <input id="map-year-slider" type="range" min="2015" max="2100" value="2026" />
-            <button id="map-play-button" class="secondary-button">Play</button>
           </div>
         </div>
       </div>
@@ -160,22 +167,6 @@
               anomaly for that scenario and year.
             </p>
           </div>
-          <div class="controls-panel">
-            <div class="control-row">
-              <span id="year-label" class="control-label">Year: 2015</span>
-              <input id="year-slider" type="range" min="2015" max="2100" step="1" value="2026" />
-            </div>
-            <div class="control-row">
-              <button id="play-button" class="secondary-button">Play</button>
-              <button id="reset-button" class="ghost-button">Reset</button>
-            </div>
-            <div class="control-row">
-              <label class="toggle-label">
-                <input type="checkbox" id="comparison-toggle" checked />
-                <span>show all scenarios</span>
-              </label>
-            </div>
-          </div>
         </div>
 
         <div id="viz-container" class="panel panel-glass">
@@ -189,6 +180,12 @@
         </div>
       </div>
     </section>
+
+    <div id="scenario-focus-overlay">
+      <svg id="scenario-focus-svg" width="500" height="650"></svg>
+      <div id="scenario-focus-panel"></div>
+      <button id="scenario-focus-exit">Back</button>
+    </div>
 
     <!-- THRESHOLD SECTION -->
     <section id="threshold-section" class="section observe">
@@ -204,31 +201,31 @@
         </div>
         <div class="threshold-grid">
           <div class="threshold-card">
-            <div class="threshold-pill threshold-pill-15">+1.5°C</div>
-            <h3>Risk 1</h3>
+            <div class="threshold-pill threshold-pill-15">+2.0°C</div>
+            <h3>Local Stress</h3>
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus, vitae molestiae saepe corrupti nobis ad totam modi commodi deleniti maxime dignissimos impedit placeat dolorum odio laboriosam mollitia facere atque aliquid.
+              At +2 °C of global warming, most countries begin experiencing persistent, locally disruptive impacts. According to the IPCC AR6 WGII, this level brings more frequent heat extremes, increased water stress, and heightened risks to agriculture and health. While many nations can still adapt, the margin for effective adaptation narrows quickly, especially in regions already facing climate pressures.            
             </p>
           </div>
           <div class="threshold-card">
-            <div class="threshold-pill threshold-pill-20">+2.0°C</div>
-            <h3>Risk 2</h3>
+            <div class="threshold-pill threshold-pill-20">+4.0°C</div>
+            <h3>National Pressure</h3>
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Magni nulla nostrum iusto explicabo voluptas ipsam vero reprehenderit minus dolores laudantium, itaque voluptatum suscipit unde enim repellat placeat? Iste, perspiciatis tenetur?
+              By +4 °C, the IPCC identifies high to very high risks across nearly all sectors. For individual countries, this means compounding pressures on food production, water availability, infrastructure, and public health. Heatwaves become more dangerous, crop yields decline more sharply, and coastal or arid nations face accelerating adaptation limits. At this stage, climate impacts begin to reshape national planning and economic stability.
             </p>
           </div>
           <div class="threshold-card">
-            <div class="threshold-pill threshold-pill-30">+3.0°C</div>
-            <h3>Risk 3</h3>
+            <div class="threshold-pill threshold-pill-30">+6.0°C</div>
+            <h3>Societal Instability</h3>
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure totam, sit accusantium laboriosam rerum saepe nemo ipsam dolor ullam, voluptatum obcaecati, hic unde perspiciatis. Nisi laudantium doloribus ullam alias non.
+              At +6 °C, the IPCC’s long‑term scenario assessments show that many countries face severe and often irreversible impacts. Extreme heat can exceed safe limits for outdoor labor, major ecosystems within national borders may collapse or shift, and critical infrastructure faces chronic stress. Adaptation becomes extremely difficult, and climate impacts begin to challenge social and economic stability within nations.
             </p>
           </div>
           <div class="threshold-card">
-            <div class="threshold-pill threshold-pill-40">+4.0°C</div>
-            <h3>Risk 4</h3>
+            <div class="threshold-pill threshold-pill-40">+8.0°C</div>
+            <h3>Transformation Zone</h3>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quam quis beatae obcaecati dolor, porro earum expedita veniam aspernatur saepe officiis nihil alias nulla suscipit! Labore deserunt est rem facere eligendi.
+              At +8 °C—near the upper bound of high‑emissions long‑term projections—the IPCC indicates that countries enter a state of deep, structural transformation. Entire landscapes may change, from forests to grasslands or from habitable zones to heat‑stressed regions. Coastal nations face long‑term multi‑meter sea‑level rise, and many regions experience heat conditions that exceed human physiological limits. At this level, climate change fundamentally reshapes a country’s geography, economy, and habitability.
             </p>
           </div>
         </div>

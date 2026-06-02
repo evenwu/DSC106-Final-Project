@@ -13,10 +13,11 @@ const years = d3.range(2015, 2101);
 let selectedRegion = "Global";
 
 // DOM references
-const yearSlider = document.getElementById("year-slider");
-const yearLabel = document.getElementById("year-label");
-const playButton = document.getElementById("play-button");
-const resetButton = document.getElementById("reset-button");
+const globalSlider = document.getElementById("global-year-slider");
+const globalYearLabel = document.getElementById("global-year-label");
+const globalPlayButton = document.getElementById("global-play-button");
+const globalResetButton = document.getElementById("global-reset-button");
+
 const comparisonToggle = document.getElementById("comparison-toggle");
 const tooltip = d3.select("#tooltip");
 const scrollToMapButton = document.getElementById("scroll-to-map");
@@ -29,18 +30,12 @@ const riskNarrativeContainer = d3.select("#risk-narrative");
 // Map controls
 const mapScenarioSelect = document.getElementById("map-scenario-select");
 const mapRiskSelect = document.getElementById("map-risk-select");
-const mapYearSlider = document.getElementById("map-year-slider");
-const mapYearLabel = document.getElementById("map-year-label");
-const mapPlayButton = document.getElementById("map-play-button");
 
-let currentYear = +yearSlider.value;
+// Global year state
+let currentYear = 2015;
+let mapCurrentYear = 2015;
 let playing = false;
 let playTimer = null;
-
-let mapCurrentYear = +mapYearSlider.value;
-let mapPlaying = false;
-let mapTimer = null;
-
 
 // =============================================================
 //  LOAD CSV
@@ -59,12 +54,18 @@ d3.csv("data.csv").then(raw => {
     dataByCountry[d.country][d.scenario][d.year] = d.value;
   });
 
-  // After loading real data, initialize everything
+  // After loading real data, initialize everything at currentYear
+  if (globalSlider) {
+    globalSlider.value = currentYear;
+  }
+  if (globalYearLabel) {
+    globalYearLabel.textContent = `Year: ${currentYear}`;
+  }
+
   updateThermometers(currentYear);
   updateLines();
-  updateMapHighlight(mapCurrentYear);
+  updateMapHighlight(currentYear);
 });
-
 
 function syntheticTemp(year, scenarioId, countryName) {
   const c = dataByCountry[countryName] || dataByCountry["Global"];
@@ -88,7 +89,8 @@ years.forEach((year) => {
   });
 });
 
-const maxTemp = 10;
+const maxTemp = 11;
+
 
 // ---------------------- Thermometer visualization ---------------------- //
 
@@ -118,30 +120,10 @@ const xScaleThermo = d3
 
 // Thresholds (Risks)
 const thresholds = [
-  {
-    value: 1.5,
-    label: "Risk 1",
-    display: "Risk 1 (+1.5°C)",
-    impact: "something"
-  },
-  {
-    value: 2.0,
-    label: "Risk 2",
-    display: "Risk 2 (+2.0°C)",
-    impact: "something"
-  },
-  {
-    value: 3.0,
-    label: "Risk 3",
-    display: "Risk 3 (+3.0°C)",
-    impact: "something"
-  },
-  {
-    value: 4.0,
-    label: "Risk 4",
-    display: "Risk 4 (+4.0°C)",
-    impact: "something"
-  }
+  { value: 2.0, label: "Local Stress", display: "(+2.0°C)" },
+  { value: 4.0, label: "National Pressure", display: "(+4.0°C)" },
+  { value: 6.0, label: "Societal Instability", display: "(+6.0°C)" },
+  { value: 8.0, label: "Transformation Zone", display: "(+8.0°C)" }
 ];
 
 // Threshold lines
@@ -180,7 +162,7 @@ thermoG
       .style("display", "block")
       .style("left", `${event.pageX + 10}px`)
       .style("top", `${event.pageY - 10}px`)
-      .html(`<strong>${d.display}</strong><br/>${d.impact}`);
+      .html(`<strong>${d.display}</strong>`);
   })
   .on("mouseleave", () => {
     tooltip.style("display", "none");
@@ -193,6 +175,7 @@ const thermoGroups = thermoG
   .enter()
   .append("g")
   .attr("class", "thermo-group")
+  .attr("data-id", (d) => d.id)
   .attr("transform", (d) => `translate(${xScaleThermo(d.id)},0)`);
 
 const thermoWidthBand = xScaleThermo.bandwidth();
@@ -271,6 +254,117 @@ thermoG
 thermoG
   .selectAll(".y-axis line, .y-axis path")
   .style("stroke", "#374151");
+
+
+// ---------------------- Scenario Focus Mode ---------------------- //
+
+let focusedScenario = null;
+
+// Click handler
+thermoGroups.on("click", (event, d) => enterScenarioFocus(d.id));
+
+function enterScenarioFocus(scenarioId) {
+  if (focusedScenario) return;
+  focusedScenario = scenarioId;
+
+  const overlay = d3.select("#scenario-focus-overlay");
+  const overlaySvg = d3.select("#scenario-focus-svg");
+  overlay
+    .style("display", "flex")
+    .style("visibility", "visible")
+    .style("pointer-events", "auto");
+
+  // Hide original thermometers
+  thermoGroups.style("opacity", 0.15);
+
+  // Remove previous clone
+  overlaySvg.selectAll("*").remove();
+
+  // Clone thermometer
+  const original = d3.select(`.thermo-group[data-id="${scenarioId}"]`);
+  const clone = original.node().cloneNode(true);
+  const cloneSel = d3.select(overlaySvg.node().appendChild(clone));
+
+  // Make clone fully opaque
+  cloneSel.style("opacity", 1);
+
+  // Overlay SVG size
+  const svgW = +overlaySvg.attr("width");
+  const svgH = +overlaySvg.attr("height");
+
+  // Start + end positions
+  const startX = svgW * 0.25;
+  const startY = svgH * 0.65;
+  const endX = svgW * 0.25;
+  const endY = svgH * 0.40;
+
+  // Animate
+  cloneSel
+    .attr("transform", `translate(${startX},${startY}) scale(1)`)
+    .transition()
+    .duration(450)
+    .ease(d3.easeCubicOut)
+    .attr("transform", `translate(${endX},${endY}) scale(2)`);
+
+  // Populate panel
+  showScenarioPanel(scenarioId);
+}
+
+// Exit focus mode
+document
+  .getElementById("scenario-focus-exit")
+  .addEventListener("click", exitScenarioFocus);
+
+function exitScenarioFocus() {
+  if (!focusedScenario) return;
+
+  focusedScenario = null;
+
+  const overlay = d3.select("#scenario-focus-overlay");
+  overlay
+    .style("display", "none")
+    .style("visibility", "hidden")
+    .style("pointer-events", "none");
+
+  // Restore original thermometers
+  thermoGroups
+    .transition()
+    .duration(300)
+    .style("opacity", 1);
+}
+
+// Compute crossing year for a single scenario
+function crossingYearSingleScenario(scenarioId, thresholdValue) {
+  for (let y = 2020; y <= 2100; y++) {
+    if (getTemp(y, scenarioId, selectedRegion) >= thresholdValue) return y;
+  }
+  return null;
+}
+
+// Populate the panel
+function showScenarioPanel(scenarioId) {
+  const panel = d3.select("#scenario-focus-panel");
+  panel.html("");
+
+  panel
+    .append("div")
+    .style("font-size", "16px")
+    .style("margin-bottom", "10px")
+    .style("font-weight", "600")
+    .text(`${scenarioId} — Threshold Crossings`);
+
+  thresholds.forEach((t) => {
+    const year = crossingYearSingleScenario(scenarioId, t.value);
+    panel.append("p").html(
+      `<strong>${t.display}</strong>: ${
+        year
+          ? `<span style="color:#fca5a5">${year}</span>`
+          : "Not reached by 2100"
+      }`
+    );
+  });
+}
+
 
 // ---------------------- Line chart ---------------------- //
 
@@ -368,6 +462,7 @@ const yearMarker = lineG
   .attr("stroke-dasharray", "4 3")
   .attr("opacity", 0.9);
 
+
 // ---------------------- Scenario checkboxes ---------------------- //
 
 const checkboxContainer = d3.select("#scenario-checkboxes");
@@ -395,10 +490,11 @@ scenarios.forEach((s) => {
     .style("color", s.color);
 });
 
+
 // ---------------------- Interaction logic ---------------------- //
 
-function getTemp(year, scenarioId) {
-  return syntheticTemp(year, scenarioId, selectedRegion);
+function getTemp(year, scenarioId, region = selectedRegion) {
+  return syntheticTemp(year, scenarioId, region);
 }
 
 function updateYearMarker(year) {
@@ -411,7 +507,13 @@ function updateYearMarker(year) {
 
 function updateThermometers(year) {
   currentYear = year;
-  yearLabel.textContent = `Year: ${year}`;
+
+  if (globalYearLabel) {
+    globalYearLabel.textContent = `Year: ${year}`;
+  }
+  if (globalSlider && +globalSlider.value !== year) {
+    globalSlider.value = year;
+  }
 
   thermoFill
     .transition()
@@ -431,6 +533,7 @@ function updateThermometers(year) {
     .text((d) => `${getTemp(year, d.id).toFixed(2)}°C`);
 
   updateYearMarker(year);
+  updateMapHighlight(year);
 }
 
 function updateLines() {
@@ -448,51 +551,20 @@ function updateLines() {
     );
 }
 
-// Slider
-yearSlider.addEventListener("input", (e) => {
-  const year = +e.target.value;
-  updateThermometers(year);
-});
-
-// Play / pause
-playButton.addEventListener("click", () => {
-  playing = !playing;
-  playButton.textContent = playing ? "Pause" : "Play";
-
-  if (playing) {
-    playTimer = d3.interval(() => {
-      let year = currentYear + 1;
-      if (year > +yearSlider.max) year = +yearSlider.min;
-      yearSlider.value = year;
-      updateThermometers(year);
-    }, 420);
-  } else if (playTimer) {
-    playTimer.stop();
-  }
-});
-
-// Reset year
-resetButton.addEventListener("click", () => {
-  if (playTimer) {
-    playTimer.stop();
-    playing = false;
-    playButton.textContent = "Play";
-  }
-  yearSlider.value = 2020;
-  updateThermometers(2020);
-});
 
 // Comparison mode
-comparisonToggle.addEventListener("change", (e) => {
-  const on = e.target.checked;
-  if (on) {
-    thermoGroups.transition().style("opacity", 1);
-  } else {
-    thermoGroups.transition().style("opacity", (d) =>
-      d.id === "SSP2-4.5" ? 1 : 0.25
-    );
-  }
-});
+if (comparisonToggle) {
+  comparisonToggle.addEventListener("change", (e) => {
+    const on = e.target.checked;
+    if (on) {
+      thermoGroups.transition().style("opacity", 1);
+    } else {
+      thermoGroups.transition().style("opacity", (d) =>
+        d.id === "SSP2-4.5" ? 1 : 0.25
+      );
+    }
+  });
+}
 
 // Scroll to map button
 if (scrollToMapButton) {
@@ -503,9 +575,6 @@ if (scrollToMapButton) {
     }
   });
 }
-
-// Initialize thermometers
-updateThermometers(currentYear);
 
 // ---------------------- World map ---------------------- //
 
@@ -562,7 +631,7 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(
       });
 
     // Initial map highlight state
-    updateMapHighlight(mapCurrentYear);
+    updateMapHighlight(currentYear);
   }
 );
 
@@ -610,7 +679,6 @@ resetRegionButton.addEventListener("click", () => {
 
 function updateMapHighlight(year) {
   mapCurrentYear = year;
-  mapYearLabel.textContent = `Year: ${year}`;
 
   const scenarioId = mapScenarioSelect.value;
   const thresholdValue = parseFloat(mapRiskSelect.value);
@@ -624,35 +692,12 @@ function updateMapHighlight(year) {
   });
 }
 
-// Map slider
-mapYearSlider.addEventListener("input", (e) => {
-  const year = +e.target.value;
-  updateMapHighlight(year);
-});
-
-// Map play / pause
-mapPlayButton.addEventListener("click", () => {
-  mapPlaying = !mapPlaying;
-  mapPlayButton.textContent = mapPlaying ? "Pause" : "Play";
-
-  if (mapPlaying) {
-    mapTimer = d3.interval(() => {
-      let year = mapCurrentYear + 1;
-      if (year > +mapYearSlider.max) year = +mapYearSlider.min;
-      mapYearSlider.value = year;
-      updateMapHighlight(year);
-    }, 500);
-  } else if (mapTimer) {
-    mapTimer.stop();
-  }
-});
-
 // Scenario / risk change should recompute highlight
 mapScenarioSelect.addEventListener("change", () => {
-  updateMapHighlight(mapCurrentYear);
+  updateMapHighlight(currentYear);
 });
 mapRiskSelect.addEventListener("change", () => {
-  updateMapHighlight(mapCurrentYear);
+  updateMapHighlight(currentYear);
 });
 
 // ---------------------- Risk narrative ---------------------- //
@@ -711,3 +756,81 @@ const observer = new IntersectionObserver(
 );
 
 observedSections.forEach((section) => observer.observe(section));
+
+
+// ---------------------- Global year controls (slider + play + reset) ---------------------- //
+
+if (globalSlider) {
+  globalSlider.min = 2015;
+  globalSlider.max = 2100;
+  globalSlider.value = currentYear;
+
+  globalSlider.addEventListener("input", (e) => {
+    const year = +e.target.value;
+    updateThermometers(year);
+    updateLines();
+  });
+}
+
+if (globalResetButton) {
+  globalResetButton.addEventListener("click", () => {
+    if (playTimer) {
+      playTimer.stop();
+      playTimer = null;
+    }
+    playing = false;
+    if (globalPlayButton) {
+      globalPlayButton.textContent = "Play";
+    }
+
+    currentYear = 2015;
+    if (globalSlider) {
+      globalSlider.value = currentYear;
+    }
+    updateThermometers(currentYear);
+    updateLines();
+  });
+}
+
+if (globalPlayButton) {
+  globalPlayButton.addEventListener("click", () => {
+    playing = !playing;
+    globalPlayButton.textContent = playing ? "Pause" : "Play";
+
+    if (playing) {
+      if (playTimer) playTimer.stop();
+
+      playTimer = d3.interval(() => {
+        let nextYear = currentYear + 1;
+
+        // Stop at 2100
+        if (nextYear > 2100) {
+          playing = false;
+          globalPlayButton.textContent = "Play";
+          if (playTimer) {
+            playTimer.stop();
+            playTimer = null;
+          }
+          return;
+        }
+
+        currentYear = nextYear;
+        if (globalSlider) {
+          globalSlider.value = currentYear;
+        }
+        updateThermometers(currentYear);
+        updateLines();
+      }, 420);
+    } else {
+      if (playTimer) {
+        playTimer.stop();
+        playTimer = null;
+      }
+    }
+  });
+}
+
+// Initialize once (in case data is zeroed before CSV load)
+updateThermometers(currentYear);
+updateLines();
+updateMapHighlight(currentYear);
