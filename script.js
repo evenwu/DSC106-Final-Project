@@ -515,8 +515,8 @@ const mapHeight = +mapSvg.attr("height");
 
 const projection = d3
   .geoMercator()
-  .scale((mapWidth / (2 * Math.PI)) * 1.1)
-  .translate([mapWidth / 2, mapHeight / 1.6]);
+  .scale((mapWidth / (2 * Math.PI)) * 0.9)
+  .translate([mapWidth / 2, mapHeight / 2]);
 
 const path = d3.geoPath().projection(projection);
 

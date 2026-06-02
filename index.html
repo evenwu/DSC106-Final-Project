@@ -109,13 +109,29 @@
         </div>
       </div>
 
+
+
       <div class="map-container panel panel-glass">
-        <svg id="world-map-svg" width="1120" height="480"></svg>
-        <div class="viz-caption">
-          <span class="viz-caption-main">
-            Hover to see country names. Click a country to explore its climate future in the visualizations below.
-          </span>
+        <svg id="world-map-svg" width="1120" height="700"></svg>
+        <div id="map-legend" class="map-legend">
+          <div class="legend-row">
+            <span class="legend-swatch default"></span>
+            <span>Country</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-swatch selected"></span>
+            <span>Selected</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-swatch threshold"></span>
+            <span>Crosses threshold</span>
+          </div>
+          <div class="legend-row">
+            <span class="legend-swatch both"></span>
+            <span>Selected + threshold</span>
+          </div>
         </div>
+
       </div>
     </section>
 
