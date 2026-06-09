@@ -33,6 +33,7 @@ const divergenceText = document.getElementById("divergence-text");
 // Map controls
 const mapScenarioSelect = document.getElementById("map-scenario-select");
 const mapRiskSelect = document.getElementById("map-risk-select");
+const countrySelect = document.getElementById("country-select");
 
 // Global year state
 let currentYear = 2015;
@@ -56,6 +57,19 @@ d3.csv("data.csv").then(raw => {
 
     dataByCountry[d.country][d.scenario][d.year] = d.value;
   });
+
+  if (countrySelect) {
+  const countries = Object.keys(dataByCountry)
+    .filter(country => country !== "Global")
+    .sort((a, b) => a.localeCompare(b));
+
+  countries.forEach(country => {
+    const option = document.createElement("option");
+    option.value = country;
+    option.textContent = country;
+    countrySelect.appendChild(option);
+  });
+  }
 
   // After loading real data, initialize everything at currentYear
   if (globalSlider) {
@@ -688,13 +702,7 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(
         event.stopPropagation();
 
         const name = d.properties.name || "Unknown";
-        selectedRegion = name;
-        updateRegionUI();
-        updateThermometers(currentYear);
-        updateLines();
-        highlightSelectedCountry(name);
-        updateRiskNarrative(name);
-        updateDivergenceCard();
+        setSelectedRegion(name);
 
         const thermoSection = document.getElementById("thermo-section");
         if (thermoSection) {
@@ -710,6 +718,36 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(
 function highlightSelectedCountry(name) {
   if (!countryPaths) return;
   countryPaths.classed("selected", (d) => d.properties.name === name);
+}
+
+function setSelectedRegion(region) {
+  selectedRegion = region;
+
+  updateRegionUI();
+  updateThermometers(currentYear);
+  updateLines();
+
+  if (region === "Global") {
+    highlightSelectedCountry(null);
+    riskNarrativeContainer.html(`
+      <div class="risk-narrative-title">When does this place cross each risk?</div>
+      <p class="risk-narrative-placeholder">
+        Select a country on the map above to see when it crosses each risk level in a high-emissions future
+        (SSP5-8.5) compared to a low-emissions future (SSP1-2.6).
+      </p>
+    `);
+  } else {
+    highlightSelectedCountry(region);
+    updateRiskNarrative(region);
+  }
+
+  if (typeof updateDivergenceCard === "function") {
+    updateDivergenceCard();
+  }
+
+  if (countrySelect && countrySelect.value !== region) {
+    countrySelect.value = region;
+  }
 }
 
 function updateRegionUI() {
@@ -740,13 +778,16 @@ function updateRegionUI() {
 
 // Reset region to global
 resetRegionButton.addEventListener("click", () => {
-  selectedRegion = "Global";
-  updateRegionUI();
-  updateThermometers(currentYear);
-  updateLines();
-  highlightSelectedCountry(null);
-  updateDivergenceCard();
+  setSelectedRegion("Global");
 });
+
+// Dropdown change event
+if (countrySelect) {
+  countrySelect.addEventListener("change", (event) => {
+    const region = event.target.value;
+    setSelectedRegion(region);
+  });
+}
 
 // ---------------------- Map threshold highlighting ---------------------- //
 

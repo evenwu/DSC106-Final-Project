@@ -1001,3 +1001,8 @@ html {
   font-size: 13px;
   line-height: 1.6;
 }
+
+#country-select {
+  min-width: 180px;
+  max-width: 240px;
+}
