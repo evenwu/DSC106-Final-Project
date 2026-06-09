@@ -24,6 +24,7 @@ const scrollToMapButton = document.getElementById("scroll-to-map");
 const selectedRegionLabel = document.getElementById("selected-region-label");
 const resetRegionButton = document.getElementById("reset-region-button");
 const resetZoomButton = document.getElementById("reset-zoom-button");
+const themeToggleButton = document.getElementById("theme-toggle");
 
 const thermoRegionText = document.getElementById("thermo-region-text");
 const lineRegionText = document.getElementById("line-region-text");
@@ -480,6 +481,58 @@ const yearMarker = lineG
   .attr("stroke-dasharray", "4 3")
   .attr("opacity", 0.9);
 
+// Invisible hover layer for line chart tooltip
+const lineHoverLayer = lineG
+  .append("rect")
+  .attr("class", "line-hover-layer")
+  .attr("x", 0)
+  .attr("y", 0)
+  .attr("width", lineInnerWidth)
+  .attr("height", lineInnerHeight)
+  .attr("fill", "transparent")
+  .style("pointer-events", "all")
+  .on("mousemove", (event) => {
+    const [mouseX] = d3.pointer(event);
+
+    let hoveredYear = Math.round(xScaleLine.invert(mouseX));
+
+    hoveredYear = Math.max(2015, Math.min(2100, hoveredYear));
+
+    yearMarker
+      .attr("x1", xScaleLine(hoveredYear))
+      .attr("x2", xScaleLine(hoveredYear));
+
+    let html = `<strong>${selectedRegion === "Global" ? "Global average" : selectedRegion}</strong><br>`;
+    html += `<strong>Year: ${hoveredYear}</strong><br>`;
+
+    scenarios.forEach((s) => {
+      const temp = syntheticTemp(hoveredYear, s.id, selectedRegion);
+      html += `
+        <span style="color:${s.color}; font-weight:600;">${s.id}</span>:
+        ${temp.toFixed(2)}°C<br>
+      `;
+    });
+
+    const low = syntheticTemp(hoveredYear, "SSP1-2.6", selectedRegion);
+    const high = syntheticTemp(hoveredYear, "SSP5-8.5", selectedRegion);
+    const gap = high - low;
+
+    html += `<hr style="border:0; border-top:1px solid rgba(148,163,184,0.35); margin:6px 0;">`;
+    html += `<strong>High-low gap:</strong> ${gap.toFixed(2)}°C`;
+
+    tooltip
+      .style("display", "block")
+      .style("left", `${event.pageX + 12}px`)
+      .style("top", `${event.pageY - 12}px`)
+      .html(html);
+  })
+  .on("mouseleave", () => {
+    tooltip.style("display", "none");
+
+    yearMarker
+      .attr("x1", xScaleLine(currentYear))
+      .attr("x2", xScaleLine(currentYear));
+  });
 
 // ---------------------- Scenario checkboxes ---------------------- //
 
@@ -610,6 +663,8 @@ function updateLines() {
         }))
       )
     );
+
+  lineHoverLayer.raise();
 }
 
 
@@ -949,3 +1004,15 @@ updateThermometers(currentYear);
 updateLines();
 updateMapHighlight(currentYear);
 updateDivergenceCard();
+
+
+// ---------------------- Theme toggle ---------------------- //
+
+if (themeToggleButton) {
+  themeToggleButton.addEventListener("click", () => {
+    document.body.classList.toggle("light-mode");
+
+    const isLightMode = document.body.classList.contains("light-mode");
+    themeToggleButton.textContent = isLightMode ? "Dark mode" : "Light mode";
+  });
+}
