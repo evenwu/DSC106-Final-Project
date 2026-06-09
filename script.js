@@ -23,6 +23,8 @@ const tooltip = d3.select("#tooltip");
 const scrollToMapButton = document.getElementById("scroll-to-map");
 const selectedRegionLabel = document.getElementById("selected-region-label");
 const resetRegionButton = document.getElementById("reset-region-button");
+const resetZoomButton = document.getElementById("reset-zoom-button");
+
 const thermoRegionText = document.getElementById("thermo-region-text");
 const lineRegionText = document.getElementById("line-region-text");
 const riskNarrativeContainer = d3.select("#risk-narrative");
@@ -582,6 +584,28 @@ const mapSvg = d3.select("#world-map-svg");
 const mapWidth = +mapSvg.attr("width");
 const mapHeight = +mapSvg.attr("height");
 
+// Add a group for zooming/panning
+const mapZoomG = mapSvg.append("g").attr("class", "map-zoom-layer");
+
+// Zoom behavior
+const zoom = d3.zoom()
+  .scaleExtent([1, 8])
+  .translateExtent([[0, 0], [mapWidth, mapHeight]])
+  .on("zoom", (event) => {
+    mapZoomG.attr("transform", event.transform);
+  });
+
+mapSvg.call(zoom);
+
+if (resetZoomButton) {
+  resetZoomButton.addEventListener("click", () => {
+    mapSvg
+      .transition()
+      .duration(500)
+      .call(zoom.transform, d3.zoomIdentity);
+  });
+}
+
 const projection = d3
   .geoMercator()
   .scale((mapWidth / (2 * Math.PI)) * 0.9)
@@ -596,8 +620,7 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(
   (world) => {
     const countries = topojson.feature(world, world.objects.countries).features;
 
-    countryPaths = mapSvg
-      .append("g")
+    countryPaths = mapZoomG
       .selectAll("path")
       .data(countries)
       .enter()
@@ -616,6 +639,9 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(
         tooltip.style("display", "none");
       })
       .on("click", (event, d) => {
+        event.preventDefault();
+        event.stopPropagation();
+
         const name = d.properties.name || "Unknown";
         selectedRegion = name;
         updateRegionUI();

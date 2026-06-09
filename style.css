@@ -982,5 +982,11 @@ html {
   scroll-padding-top: 90px; /* match your header height */
 }
 
+#world-map-svg {
+  cursor: grab;
+}
 
+#world-map-svg:active {
+  cursor: grabbing;
+}
 
