@@ -990,3 +990,14 @@ html {
   cursor: grabbing;
 }
 
+#divergence-card {
+  margin-top: 14px;
+  padding: 14px 16px;
+}
+
+#divergence-text {
+  margin: 6px 0 0;
+  color: #cbd5e1;
+  font-size: 13px;
+  line-height: 1.6;
+}

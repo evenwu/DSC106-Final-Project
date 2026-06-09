@@ -28,6 +28,7 @@ const resetZoomButton = document.getElementById("reset-zoom-button");
 const thermoRegionText = document.getElementById("thermo-region-text");
 const lineRegionText = document.getElementById("line-region-text");
 const riskNarrativeContainer = d3.select("#risk-narrative");
+const divergenceText = document.getElementById("divergence-text");
 
 // Map controls
 const mapScenarioSelect = document.getElementById("map-scenario-select");
@@ -67,6 +68,7 @@ d3.csv("data.csv").then(raw => {
   updateThermometers(currentYear);
   updateLines();
   updateMapHighlight(currentYear);
+  updateDivergenceCard();
 });
 
 function syntheticTemp(year, scenarioId, countryName) {
@@ -499,6 +501,49 @@ function getTemp(year, scenarioId, region = selectedRegion) {
   return syntheticTemp(year, scenarioId, region);
 }
 
+function getDivergenceYear(region, threshold = 1.0) {
+  for (let y = 2015; y <= 2100; y++) {
+    const low = syntheticTemp(y, "SSP1-2.6", region);
+    const high = syntheticTemp(y, "SSP5-8.5", region);
+
+    if (low === 0 && high === 0) continue;
+
+    const gap = high - low;
+
+    if (gap >= threshold) {
+      return y;
+    }
+  }
+
+  return null;
+}
+
+function updateDivergenceCard() {
+  if (!divergenceText) return;
+
+  const region = selectedRegion;
+  const divergenceYear = getDivergenceYear(region, 1.0);
+
+  if (!divergenceYear) {
+    divergenceText.innerHTML = `
+      For <strong>${region === "Global" ? "the global average" : region}</strong>,
+      SSP1-2.6 and SSP5-8.5 do not differ by more than 1.0°C before 2100.
+    `;
+    return;
+  }
+
+  const lowTemp = syntheticTemp(divergenceYear, "SSP1-2.6", region);
+  const highTemp = syntheticTemp(divergenceYear, "SSP5-8.5", region);
+  const gap = highTemp - lowTemp;
+
+  divergenceText.innerHTML = `
+    For <strong>${region === "Global" ? "the global average" : region}</strong>,
+    low-emissions and high-emissions futures begin to strongly diverge around
+    <strong>${divergenceYear}</strong>, when SSP5-8.5 becomes about
+    <strong>${gap.toFixed(2)}°C</strong> warmer than SSP1-2.6.
+  `;
+}
+
 function updateYearMarker(year) {
   yearMarker
     .transition()
@@ -649,6 +694,7 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json").then(
         updateLines();
         highlightSelectedCountry(name);
         updateRiskNarrative(name);
+        updateDivergenceCard();
 
         const thermoSection = document.getElementById("thermo-section");
         if (thermoSection) {
@@ -699,6 +745,7 @@ resetRegionButton.addEventListener("click", () => {
   updateThermometers(currentYear);
   updateLines();
   highlightSelectedCountry(null);
+  updateDivergenceCard();
 });
 
 // ---------------------- Map threshold highlighting ---------------------- //
@@ -860,3 +907,4 @@ if (globalPlayButton) {
 updateThermometers(currentYear);
 updateLines();
 updateMapHighlight(currentYear);
+updateDivergenceCard();
