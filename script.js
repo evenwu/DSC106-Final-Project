@@ -107,7 +107,7 @@ years.forEach((year) => {
   });
 });
 
-const maxTemp = 11;
+const maxTemp = 12;
 
 
 // ---------------------- Thermometer visualization ---------------------- //

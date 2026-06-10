@@ -40,39 +40,58 @@
     <!-- HERO SECTION -->
     <section id="hero" class="section hero-section observe">
       <div class="hero-content">
+
+        <!-- TEXT BLOCK -->
         <div class="hero-text">
-          <h1>When do Climate Futures begin to diverge and what are the consequences of our choices?</h1>
+          <h1 class="hero-title">
+            When do Climate Futures begin to diverge<br>
+            <span class="hero-title-sub">and what are the consequences of our choices?</span>
+          </h1>
+
           <p class="hero-subtitle">
-            An explorable explanation using CMIP6 data
-            to show the differences between climate futures and what those divergences mean for humanity.
+            What if the climate choices we make today don’t noticeably cause temperature 
+            increases for the next few decades? At first, different climate scenarios look 
+            relatively similar — but around mid‑century these futures begin to separate 
+            dramatically, leading to very different outcomes by 2100. This explorable 
+            helps reveal when that divergence happens and why it matters.
           </p>
+
           <div class="hero-meta">
             <span class="hero-tag">CMIP6 · SSP Scenarios</span>
             <span class="hero-tag">Interactive Thermometers</span>
             <span class="hero-tag">Country-Level Map</span>
           </div>
-          <button id="scroll-to-map" class="primary-button">
+
+          <button id="scroll-to-map" class="primary-button hero-cta">
             Choose a country to begin
           </button>
         </div>
+
+        <!-- VISUAL BLOCK -->
         <div class="hero-visual">
           <div class="hero-thermo-shell">
             <div class="hero-thermo-label">We are here</div>
             <div class="hero-thermo-temp">+1.2°C</div>
+
             <div class="hero-thermo-bar">
               <div class="hero-thermo-fill"></div>
             </div>
+
             <div class="hero-thermo-base"></div>
+
             <div class="hero-thermo-caption">
               <span class="hero-thermo-caption-sub">1850 → today</span>
             </div>
           </div>
         </div>
+
       </div>
+
       <div class="hero-scroll-hint">
         Scroll to choose a country and see its climate future
       </div>
     </section>
+
 
     <!-- MAP SECTION -->
     <section id="map-section" class="section map-section observe">
@@ -151,13 +170,18 @@
       </div>
     </section>
 
-    <!-- NARRATIVE INTRO -->
+    <!-- NARRATIVE AND -->
     <section class="section narrative-section observe">
       <div class="section-inner">
-        <div class="section-label">Narrative</div>
+        <div class="section-label">Narrative (AND)</div>
         <h2>From one shared past to many possible futures</h2>
         <p>
-          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ea soluta at placeat dignissimos aliquid impedit maxime veritatis rem molestias esse ab, nostrum laborum quos saepe dolorem asperiores ratione quaerat numquam.
+          Climate models show the projection of future temperatures under different 
+          emissions scenarios. Looking at future warming trends, the temperature increases over 
+          the coming decades. 
+        </p>
+        <p>
+          These scenarios are designed to show how human choices shape global temperatures over time. When we plot these scenarios together, they initially appear to tell a reassuring story: for the next couple of decades, the temperature curves stay close to one another, rising at nearly the same pace.
         </p>
       </div>
     </section>
@@ -201,6 +225,31 @@
       <div id="scenario-focus-panel"></div>
       <button id="scenario-focus-exit">Back</button>
     </div>
+
+    <!-- NARRATIVE BUT -->
+    <section class="section narrative-section observe">
+      <div class="section-inner">
+        <div class="section-label">Narrative (BUT)</div>
+        <h2>When Small Choices Become Big Climate Consequences</h2>
+        <p>
+          A surprising pattern emerges when we compare the projected temperatures in the 
+          next few decades. For the first few decades, the projected temperatures for the different 
+          emissions scenarios remains relatively the same, making it seem as though current 
+          climate decisions have no effect on the future temperature. 
+        </p>
+        <p>
+          However, this is misleading.  
+        </p>
+        <p>
+          This interactive visualization shows when the different climate 
+          scenarios begin to diverge and how dramatically they separate by 2100. This allows us to see that climate decisions today don’t have an 
+          immediate effect, but have profound consequences for future generations. The key idea 
+          is that the impact of our choices are delayed. The future can look relatively the same for 
+          different emissions scenarios, yet lead to dramatically different worlds by 2100. This 
+          highlights the urgency and long-term importance of making better climate decisions. 
+        </p>
+      </div>
+    </section>
 
     <!-- THRESHOLD SECTION -->
     <section id="threshold-section" class="section observe">
@@ -257,6 +306,20 @@
       </div>
     </section>
 
+    <!-- NARRATIVE THEREFORE -->
+    <section class="section narrative-section observe">
+      <div class="section-inner">
+        <div class="section-label">Narrative (THEREFORE)</div>
+        <h2>The Resolution</h2>
+        <p>
+          Therefore, the decades that look deceptively similar are actually the most important ones. They are the window in which our decisions carry the greatest leverage. The climate system responds slowly, but it responds powerfully — and by the time the scenarios visibly diverge, the momentum behind each pathway is already set.
+        </p>
+        <p>
+          The choices we make today determine which of those diverging paths we ultimately follow. Acting early doesn’t produce immediate dramatic differences — it prevents dramatic differences from ever occurring. And that is the hidden truth inside this data.
+        </p>
+      </div>
+    </section>
+
     <!-- LINE CHART SECTION -->
     <section id="line-section" class="section observe">
       <div class="section-inner">
@@ -287,78 +350,32 @@
       </div>
     </section>
 
-    <!-- CLOSING SECTION -->
-    <section class="section observe">
-      <div class="section-inner closing-section">
-        <div class="section-label">Reflection</div>
+    <!-- NARRATIVE THEREFORE -->
+    <section class="section narrative-section observe">
+      <div class="section-inner">
+        <div class="section-label">Takeaway</div>
         <h2>The future is not fixed</h2>
         <p>
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nisi iusto accusantium assumenda vero architecto mollitia distinctio rerum iste adipisci, placeat officia sit perferendis tempora ipsa animi quibusdam eveniet libero voluptas.
+          The key takeaway from our visualizations is that climate futures don’t diverge 
+          immediately. In the next few decades, different emissions scenarios lead to similar 
+          outcomes. However, around mid-century, the different emissions scenarios begin to 
+          diverge significantly, which leads to very different temperature outcomes by 2100. Our 
+          visualization shows that divergence on the graph, which makes long term climate 
+          outcomes easier to understand than through numbers alone.
+        </p>
+        <p>
+          The line chart shows how different climate scenarios are clustered together before 
+          splitting up after around mid century, which makes the timing of the divergence easy to 
+          recognize. The visualization also allows people to compare climate scenarios at 
+          different times and different regions, which helps them understand the long-term 
+          consequences of different emissions choices. 
         </p>
       </div>
     </section>
 
-
-    <!-- Writeup -->
-    <section class="writeup"> 
-      <h2>What Have We Done So Far?</h2> 
-  
-      <p> 
-        So far, we have determined the topic for our project to be when different 
-        climate futures begin to diverge under different emissions scenarios using 
-        the CMIP6 dataset. We examined different emissions scenarios and how the 
-        global temperature in the future depends on human decisions. 
-      </p> 
-  
-      <p> 
-        We also created various charts, such as a line graph, bar plot, heatmap, 
-        and threshold plots. We implemented interactive visualizations such as a 
-        time slider, animated thermometers, and visual comparison tools. 
-      </p> 
-  
-      <p> 
-        We’ve mainly focused on visualization and interaction so far, while the 
-        narrative structure of the project is still being developed. Our goal is 
-        to eventually combine storytelling with visualization and convey how 
-        different climate futures diverge over time and what each warming 
-        threshold means. 
-      </p> 
-    </section> 
-  
-    <section class="writeup"> 
-      <h2> 
-        What Will Be the Most Challenging Part of the Project and Why? 
-      </h2> 
-  
-      <p> 
-        The challenging part of this project would be to make the storytelling 
-        and interactive visualizations intuitive and visually engaging. It may 
-        also be challenging to smoothly synchronize all of the different 
-        visualizations, such as the animated thermometers, the time slider, 
-        threshold annotations, and the global map. 
-      </p> 
-  
-      <p> 
-        Another challenge would be ensuring that the visualization is not too 
-        overwhelming or cluttered for users. Since the project involves complex 
-        climate data and multiple interactions, we will need to carefully balance 
-        scientific accuracy with visual clarity. 
-      </p> 
-  
-      <p> 
-        It would also be difficult to present complex data interactions in a way 
-        that is understandable to a general audience without oversimplifying the 
-        information. Finally, we also want to balance user exploration with 
-        storytelling so that users can interact freely with the visualizations 
-        while also learning about how climate futures diverge over time and how 
-        the decisions we make today may shape future climate outcomes. 
-      </p> 
-    </section> 
   </main>
 
   
-
-
 
   <footer class="site-footer">
     <div class="footer-inner">
