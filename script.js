@@ -24,7 +24,6 @@ const scrollToMapButton = document.getElementById("scroll-to-map");
 const selectedRegionLabel = document.getElementById("selected-region-label");
 const resetRegionButton = document.getElementById("reset-region-button");
 const resetZoomButton = document.getElementById("reset-zoom-button");
-const themeToggleButton = document.getElementById("theme-toggle");
 
 const thermoRegionText = document.getElementById("thermo-region-text");
 const lineRegionText = document.getElementById("line-region-text");
@@ -1004,15 +1003,3 @@ updateThermometers(currentYear);
 updateLines();
 updateMapHighlight(currentYear);
 updateDivergenceCard();
-
-
-// ---------------------- Theme toggle ---------------------- //
-
-if (themeToggleButton) {
-  themeToggleButton.addEventListener("click", () => {
-    document.body.classList.toggle("light-mode");
-
-    const isLightMode = document.body.classList.contains("light-mode");
-    themeToggleButton.textContent = isLightMode ? "Dark mode" : "Light mode";
-  });
-}
